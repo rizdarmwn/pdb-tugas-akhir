@@ -1,0 +1,67 @@
+version: '3'
+
+services:
+
+    node1:
+        image: cassandra:3.11
+        container_name: node1
+        networks:
+            cluster_ring:
+                ipv4_address: '172.18.0.2'
+        environment:
+            - CASSANDRA_CLUSTER_NAME=DemoCluster
+            - CASSANDRA_SEEDS=node1
+            - CASSANDRA_DC=DC1
+            - CASSANDRA_RACK=RACK1
+            - CASSANDRA_START_RPC=false
+            - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+        # Exposing ports for inter cluster communication. Note this is default port value
+        # used in this image. Just being explict about it.
+        expose:
+            # Intra-node communication
+            - 7000
+            # TLS intra-node communication
+            - 7001
+            # JMX
+            - 7199
+            # CQL
+            - 9042
+            # Thrift service
+            - 9160
+        restart: unless-stopped
+        # Cassandra ulimt recommended settings
+        ulimits:
+            memlock: -1
+            nproc: 32768
+            nofile: 100000
+
+    node2:
+        image: cassandra:3.11
+        container_name: node2
+        networks:
+            cluster_ring:
+                ipv4_address: '172.18.0.3'
+        environment:
+            - CASSANDRA_CLUSTER_NAME=DemoCluster
+            - CASSANDRA_SEEDS=node1
+            - CASSANDRA_DC=DC2
+            - CASSANDRA_RACK=RACK1
+            - CASSANDRA_START_RPC=false
+            - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+        expose:
+            - 7000
+            - 7001
+            - 7199
+            - 9042
+            - 9160
+        restart: unless-stopped
+        ulimits:
+            memlock: -1
+            nproc: 32768
+            nofile: 100000
+
+networks:
+    cluster_ring:
+        ipam:
+            config:
+                - subnet: 172.18.0.0/16
