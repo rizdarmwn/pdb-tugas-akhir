@@ -17,7 +17,8 @@ def build():
     # Inspects the model and creates / updates the corresponding table and columns.
     # If keyspaces is specified, the table will be synched for all specified keyspaces.
     sync_table(models.Item)
-
     sync_table(models.Room)
+    sync_table(models.Book)
+
 
 build()
