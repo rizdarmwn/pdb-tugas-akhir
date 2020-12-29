@@ -1,17 +1,23 @@
 import db
 
 from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from models import Item, Room, RoomBase, Book, BookBase
-
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
+# kalo mau pake static uncomment line bawah
+# app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+templates = Jinja2Templates(directory="templates")
+
+# contoh pake templates
+@app.get("/", response_class=HTMLResponse)
+def read_root(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request, "hello": "Hello World"})
 
 
 @app.get("/items/{item_id}")
