@@ -18,5 +18,6 @@ def build():
     # If keyspaces is specified, the table will be synched for all specified keyspaces.
     sync_table(models.Item)
 
+    sync_table(models.Room)
 
 build()
