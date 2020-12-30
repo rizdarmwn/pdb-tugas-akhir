@@ -21,12 +21,12 @@ def read_root(request: Request):
 
 
 # CRUD Room
-@app.get("/room")
+@app.get("/api/room")
 def get_all_room():
     return {"status_code": 200, "data": list(Room.objects().all())}
 
 
-@app.post("/room")
+@app.post("/api/room")
 def create_room(room: RoomBase):
     new_room = Room.create(
         name=room.name,
@@ -39,18 +39,18 @@ def create_room(room: RoomBase):
     return {"status_code": 200, "data": new_room}
 
 
-@app.get("/room/{room_id}")
+@app.get("/api/room/{room_id}")
 def get_room(room_id: str):
     return {"status_code": 200, "data": Room.get(id=room_id)}
 
 
-@app.delete("/room/{room_id}")
+@app.delete("/api/room/{room_id}")
 def delete_room(room_id: str):
     Room.get(id=room_id).delete()
     return {"status_code": 200, "data": {}}
 
 
-@app.put("/room/{room_id}")
+@app.put("/api/room/{room_id}")
 def update_room(room_id: str, room: RoomBase):
     updated_room = Room.get(id=room_id).update(
         name=room.name,
@@ -63,19 +63,19 @@ def update_room(room_id: str, room: RoomBase):
     return {"status_code": 200, "data": updated_room}
 
 # CRUD Book
-@app.get("/book")
+@app.get("/api/book")
 def get_all_book():
     books = list(Book.objects.all())
     return {"status_code": 200, "data": books}
 
 
-@app.get("/books/{guest_email}")
+@app.get("/api/books/{guest_email}")
 def get_user_book(guest_email: str):
     books = list(Book.filter(guest_email=guest_email))
     return {"status_code": 200, "data": books}
 
 
-@app.post("/book")
+@app.post("/api/book")
 def create_book(book: BookBase):
     new_book = Book.create(
         guest_email=book.guest_email,
@@ -88,7 +88,7 @@ def create_book(book: BookBase):
     return {"status_code": 200, "data": new_book}
 
 
-@app.put("/book/{guest_email}/{book_id}/checkout")
+@app.put("/api/book/{guest_email}/{book_id}/checkout")
 def checkout_user_book(guest_email: str, book_id: str):
     updated_book = Book.get(guest_email=guest_email, id=book_id).update(
         status="Check-Out"
@@ -96,7 +96,7 @@ def checkout_user_book(guest_email: str, book_id: str):
     return {"status_code": 200, "data": updated_book}
 
 
-@app.put("/book/{guest_email}/{book_id}/cancel")
+@app.put("/api/book/{guest_email}/{book_id}/cancel")
 def cancel_user_book(guest_email: str, book_id: str):
     updated_book = Book.get(guest_email=guest_email, id=book_id).update(
         status="Canceled"
