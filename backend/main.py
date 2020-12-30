@@ -102,13 +102,13 @@ def read_root(request: Request):
 # FRONTEND STARTS
 
 
-@app.get("/rooms", response_class=HTMLResponse, include_in_schema=False, user=Depends(get_current_username))
-def read_room_list(request: Request):
+@app.get("/rooms", response_class=HTMLResponse, include_in_schema=False)
+def read_room_list(request: Request, user=Depends(get_current_username)):
     return templates.TemplateResponse("list_room.html",  {"request": request, "rooms": list(Room.objects().all())})
 
 
-@app.get("/bookings", response_class=HTMLResponse, include_in_schema=False, user=Depends(get_current_username))
-def read_booking_list(request: Request):
+@app.get("/bookings", response_class=HTMLResponse, include_in_schema=False)
+def read_booking_list(request: Request, user=Depends(get_current_username)):
     return templates.TemplateResponse("list_booking.html",  {"request": request, "bookings": list(Book.objects.all())})
 
 
@@ -118,13 +118,13 @@ def create_room_fe(request: Request):
 
 
 
-@app.get("/rooms/{room_id}", response_class=HTMLResponse, include_in_schema=False, user=Depends(get_current_username))
-def update_room(request: Request, room_id: str):
+@app.get("/rooms/{room_id}", response_class=HTMLResponse, include_in_schema=False)
+def update_room(request: Request, room_id: str, user=Depends(get_current_username)):
     room = Room.get(id=room_id)
     return templates.TemplateResponse("update_room.html",  {"request": request, "room": room})
 
-@app.get("/rooms/{room_id}/book", response_class=HTMLResponse, include_in_schema=False, user=Depends(get_current_username))
-def book_room(request: Request, room_id: str):
+@app.get("/rooms/{room_id}/book", response_class=HTMLResponse, include_in_schema=False)
+def book_room(request: Request, room_id: str, user=Depends(get_current_username)):
     room = Room.get(id=room_id)
     return templates.TemplateResponse("book_room.html",  {"request": request, "room": room})
 
