@@ -1,13 +1,16 @@
-# import db
+import db
 
+from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 from typing import Optional
-from fastapi import FastAPI, Request
 
-from models import Room, RoomBase, Book, BookBase
+from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
+predict_model = BookCancelPredictionModel()
 
 # kalo mau pake static uncomment line bawah
 # app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -28,24 +31,25 @@ def read_root(request: Request):
 def read_room_list(request: Request):
     return templates.TemplateResponse("list_room.html",  {"request": request})
 
+
 @app.get("/bookings", response_class=HTMLResponse)
 def read_booking_list(request: Request):
     return templates.TemplateResponse("list_booking.html",  {"request": request})
+
 
 @app.get("/rooms/create", response_class=HTMLResponse)
 def create_room_fe(request: Request):
     return templates.TemplateResponse("create_room.html",  {"request": request})
 
+
 @app.get("/rooms/book", response_class=HTMLResponse)
 def book_room(request: Request):
     return templates.TemplateResponse("book_room.html",  {"request": request})
 
-
 # FRONTEND ENDS
 
+
 # CRUD Room
-
-
 @app.get("/api/room")
 def get_all_room():
     return {"status_code": 200, "data": list(Room.objects().all())}
@@ -87,9 +91,8 @@ def update_room(room_id: str, room: RoomBase):
     )
     return {"status_code": 200, "data": updated_room}
 
+
 # CRUD Book
-
-
 @app.get("/api/book")
 def get_all_book():
     books = list(Book.objects.all())
@@ -103,16 +106,42 @@ def get_user_book(guest_email: str):
 
 
 @app.post("/api/book")
-def create_book(book: BookBase):
+async def create_book(book: BookBase, background_tasks: BackgroundTasks):
     new_book = Book.create(
         guest_email=book.guest_email,
         room_id=book.room_id,
         number_of_guest=book.number_of_guest,
-        status="Booked",
+        status="No-Show",
         checkin_date=book.checkin_date,
         checkout_date=book.checkout_date,
     )
+    background_tasks.add_task(predict_book_cancellation, new_book)
     return {"status_code": 200, "data": new_book}
+
+
+def predict_book_cancellation(book: Book):
+    booking_date = book.booking_date.date()
+    checkin_date = book.checkin_date.date()
+
+    lead_time = (checkin_date - booking_date).days
+    arrival_date_month = checkin_date.month
+    arrival_date_day_of_month = checkin_date.day
+
+    prediction, probability = predict_model.predict_cancellation(
+        lead_time, arrival_date_month, arrival_date_day_of_month
+    )
+
+    BookCancelPredictionHistory.create(
+        cancel_prediction=prediction,
+        booking_date=booking_date,
+        id=book.id,
+        probability=probability,
+        guest_email=book.guest_email,
+        room_id=book.room_id,
+        number_of_guest=book.number_of_guest,
+        checkin_date=checkin_date,
+        checkout_date=book.checkout_date.date()
+    )
 
 
 @app.put("/api/book/{guest_email}/{book_id}/checkout")
