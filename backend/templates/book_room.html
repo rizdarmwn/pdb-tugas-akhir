@@ -1,0 +1,47 @@
+{% extends "base.html" %} 
+{% block title %}Test Page{% endblock %} 
+{% block content %}
+  <div>
+    <img
+      src="https://cache.marriott.com/marriottassets/marriott/JOGMC/jogmc-exterior-0236-hor-feat.jpg"
+      alt="hotel"
+      class="w-100"
+    />
+    <h1 class="text-center">Check Availability</h1>
+    <p class="subtitle text-center">Rp5.000.000</p>
+    <form class="row g-3">
+      <div class="col">
+        <label for="checkIn" class="form-label fw-bold">Check In</label>
+        <input type="date" class="form-control" id="checkIn">
+      </div>
+      <div class="col">
+        <label for="checkOut" class="form-label fw-bold">Check out</label>
+        <input type="date" class="form-control" id="checkOut">
+      </div>
+      <div class="col">
+        <label for="adult" class="form-label fw-bold">Adult</label>
+        <select class="form-select" aria-label="Adult">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <div class="col">
+        <label for="children" class="form-label fw-bold">Children</label>
+        <select class="form-select" aria-label="children">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <div class="col">
+        <label class="form-label fw-bold invisible">Children</label>
+        <div class="d-grid w-100">
+          <button class="btn btn-primary btn-block">BOOK NOW</button>
+        </div>
+      </div>
+    </form>
+  </div>
+{% endblock %}
