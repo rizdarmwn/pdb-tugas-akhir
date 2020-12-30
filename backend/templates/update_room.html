@@ -1,39 +1,71 @@
 {% extends "base.html" %} 
-{% block title %}Test Page{% endblock %} 
+{% block title %}Update Room{% endblock %} 
 {% block content %}
   <div>
-    <form class="row g-3" method="POST"> 
-      <h2 class="text-center">Update Room</h2>
+    <form class="row g-3" data-id="{{ room.id }}" id="update_room"> 
+      <h2 class="text-center">Update Room : {{ room.name }}</h2>
       <div class="col-12">
-        <label for="room_name" class="form-label">Room Name</label>
-        <input type="text" class="form-control" id="room_name">
+        <label for="name" class="form-label">Room Name</label>
+        <input type="text" class="form-control" required value="{{room.name}}" name="name" id="name">
       </div>
       <div class="col-12">
-        <label for="hotle_name" class="form-label">Hotel Name</label>
-        <input type="text" class="form-control" id="hotle_name">
+        <label for="hotel_name" class="form-label">Hotel Name</label>
+        <input type="text" class="form-control" required value="{{room.hotel_name}}" name="hotel_name" id="hotel_name">
       </div>
       <div class="col-12">
-        <label for="location" class="form-label">Location</label>
-        <input type="text" class="form-control" id="location">
+        <label for="hotel_location" class="form-label">Location</label>
+        <input type="text" class="form-control" required value="{{room.hotel_location}}" name="hotel_location" id="hotel_location">
       </div>
       <div class="col-12">
         <label for="hotelType" class="form-label">Hotel Type</label>
-        <select class="form-select" aria-label="Adult" name="hotel_type">
-          <option value="resort">Resort</option>
-          <option value="city">City</option>
+        <select class="form-select" aria-label="Adult" required name="hotel_type">
+          <option {% if room.hotel_type == "resort"%}selected="selected"{% endif %} value="resort">Resort</option>
+          <option {% if room.hotel_type == "city"%}selected="selected"{% endif %} value="city">City</option>
         </select>
       </div>
       <div class="col-12">
         <label for="guest_capacity" class="form-label">Guest Capacity</label>
-        <input type="number" class="form-control" id="guest_capacity">
+        <input type="number" class="form-control" required value="{{room.guest_capacity}}" name="guest_capacity" id="guest_capacity">
       </div>
       <div class="col-12">
         <label for="price" class="form-label">Price</label>
-        <input type="number" class="form-control" id="price">
+        <input type="number" class="form-control" required value="{{room.price}}" name="price" id="price">
       </div>
       <div class="col-12">
         <button type="submit" class="btn btn-primary">UPDATE</button>
       </div>
     </form>
   </div>
+{% endblock %}
+{% block extrascript %}
+<script>
+  const form = document.getElementById("update_room");
+  form.onsubmit = async function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    const body = {
+      "name": event.target.elements["name"].value,
+      "hotel_name": event.target.elements["hotel_name"].value,
+      "hotel_location": event.target.elements["hotel_location"].value,
+      "hotel_type": event.target.elements["hotel_type"].value,
+      "guest_capacity": event.target.elements["guest_capacity"].value,
+      "price": event.target.elements["price"].value
+    }
+    try{
+      const resp = await fetch(`/api/room/${this.dataset.id}`, {
+        method: 'PUT',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      alert("Room updated successfully");
+    }
+    catch(e){
+      alert("Ooops, there's something wrong");
+    }
+    return false;
+  };
+</script>
 {% endblock %}
