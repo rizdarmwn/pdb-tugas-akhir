@@ -11,16 +11,16 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 class User(Model):
-    id = columns.UUID(primary_key=True, default=uuid.uuid4)
+    password = columns.Text(partition_key=True)
     email = columns.Text(primary_key=True)
+    id = columns.UUID(primary_key=True, default=uuid.uuid4)
     first_name = columns.Text()
     last_name = columns.Text()
     phone_number = columns.Text()
     gender = columns.Boolean()
     role = columns.Boolean()
-    password = columns.Text(partition_key=True)
 
-class User(BaseModel):
+class UserBase(BaseModel):
     email: str
     first_name: str
     last_name: str
