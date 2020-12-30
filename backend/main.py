@@ -32,11 +32,17 @@ def read_room_list(request: Request):
     return templates.TemplateResponse("list_room.html",  {"request": request, "rooms": list(Room.objects().all())})
 
 
+<<<<<<< HEAD
 @app.get("/bookings", response_class=HTMLResponse, include_in_schema=False)
+=======
+
+@app.get("/bookings", response_class=HTMLResponse)
+>>>>>>> b8e68da12744f01922c0dbaf6b567c9514f3761a
 def read_booking_list(request: Request):
     return templates.TemplateResponse("list_booking.html",  {"request": request, "bookings": list(Book.objects.all())})
 
 
+<<<<<<< HEAD
 @app.get("/rooms/create", response_class=HTMLResponse, include_in_schema=False)
 def create_room_fe(request: Request):
     return templates.TemplateResponse("create_room.html",  {"request": request})
@@ -53,11 +59,21 @@ def book_room(request: Request, room_id: str):
     room = Room.get(id=room_id)
     return templates.TemplateResponse("book_room.html",  {"request": request, "room": room})
 
+=======
+@app.get("/rooms/create", response_class=HTMLResponse)
+def create_room_fe(request: Request):
+    return templates.TemplateResponse("create_room.html",  {"request": request})
+
+
+@app.get("/rooms/book", response_class=HTMLResponse)
+def book_room(request: Request):
+    return templates.TemplateResponse("book_room.html",  {"request": request})
+
+>>>>>>> b8e68da12744f01922c0dbaf6b567c9514f3761a
 # FRONTEND ENDS
 
+
 # CRUD Room
-
-
 @app.get("/api/room")
 def get_all_room():
     return {"status_code": 200, "data": list(Room.objects().all())}
@@ -99,10 +115,14 @@ def update_room(room_id: str, room: RoomBase):
     )
     return {"status_code": 200, "data": updated_room}
 
+<<<<<<< HEAD
 
 # CRUD Book
 
+=======
+>>>>>>> b8e68da12744f01922c0dbaf6b567c9514f3761a
 
+# CRUD Book
 @app.get("/api/book")
 def get_all_book():
     books = list(Book.objects.all())
@@ -172,5 +192,10 @@ def cancel_user_book(guest_email: str, book_id: str):
 
 @app.get("/api/cancel-prediction-history")
 def history_cancel_prediction():
+<<<<<<< HEAD
     prediction = BookCancelPredictionHistory.filter(cancel_prediction=True)
     return {"status_code": 200, "data": list(prediction)}
+=======
+    predictions = BookCancelPredictionHistory.objects.all()
+    return {"status_code": 200, "data": list(predictions)}
+>>>>>>> b8e68da12744f01922c0dbaf6b567c9514f3761a

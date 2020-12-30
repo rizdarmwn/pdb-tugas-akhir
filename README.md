@@ -1,6 +1,7 @@
 # pdb-tugas-akhir
 
-## backend
 installation:
 
-`docker-compose up -d`
+`docker-compose up -d --build`
+
+The system run in port 8000
