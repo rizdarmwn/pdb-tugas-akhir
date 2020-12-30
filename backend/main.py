@@ -96,7 +96,7 @@ def checkout_user_book(guest_email: str, book_id: str):
     return {"status_code": 200, "data": updated_book}
 
 
-@app.put("/book/{guest_email}/{book_id}/status")
+@app.put("/book/{guest_email}/{book_id}/cancel")
 def cancel_user_book(guest_email: str, book_id: str):
     updated_book = Book.get(guest_email=guest_email, id=book_id).update(
         status="Canceled"
