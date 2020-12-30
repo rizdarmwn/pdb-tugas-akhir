@@ -5,12 +5,6 @@ from datetime import date
 from pydantic import BaseModel
 
 
-class Item(Model):
-    id = columns.UUID(primary_key=True)
-    name = columns.Text()
-    desc = columns.Text()
-
-
 class Room(Model):
     id = columns.UUID(primary_key=True, default=uuid.uuid4)
     name = columns.Text()
@@ -31,15 +25,14 @@ class RoomBase(BaseModel):
 
 
 class Book(Model):
+    guest_email = columns.Text(partition_key=True)
     id = columns.UUID(primary_key=True, default=uuid.uuid4)
-    # unique_code = columns.Text()
-    guest_email = columns.Text()
+    booking_date = columns.Date(default=date.today)
+    status = columns.Text()
     room_id = columns.UUID()
     number_of_guest = columns.Integer()
-    status = columns.Text()
     checkin_date = columns.Date()
     checkout_date = columns.Date()
-    booking_date = columns.Date(default=date.today)
 
 
 class BookBase(BaseModel):
