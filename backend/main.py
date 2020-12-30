@@ -1,13 +1,14 @@
 import db
 
-from typing import Optional
-from fastapi import FastAPI, Request
-
-from models import Room, RoomBase, Book, BookBase
+from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from typing import Optional
+
+from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
 
 app = FastAPI()
+predict_model = BookCancelPredictionModel()
 
 # kalo mau pake static uncomment line bawah
 # app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -76,16 +77,42 @@ def get_user_book(guest_email: str):
 
 
 @app.post("/api/book")
-def create_book(book: BookBase):
+async def create_book(book: BookBase, background_tasks: BackgroundTasks):
     new_book = Book.create(
         guest_email=book.guest_email,
         room_id=book.room_id,
         number_of_guest=book.number_of_guest,
-        status="Booked",
+        status="No-Show",
         checkin_date=book.checkin_date,
         checkout_date=book.checkout_date,
     )
+    background_tasks.add_task(predict_book_cancellation, new_book)
     return {"status_code": 200, "data": new_book}
+
+
+def predict_book_cancellation(book: Book):
+    booking_date = book.booking_date.date()
+    checkin_date = book.checkin_date.date()
+
+    lead_time = (checkin_date - booking_date).days
+    arrival_date_month = checkin_date.month
+    arrival_date_day_of_month = checkin_date.day
+
+    prediction, probability = predict_model.predict_cancellation(
+        lead_time, arrival_date_month, arrival_date_day_of_month
+    )
+
+    BookCancelPredictionHistory.create(
+        cancel_prediction=prediction,
+        booking_date=booking_date,
+        id=book.id,
+        probability=probability,
+        guest_email=book.guest_email,
+        room_id=book.room_id,
+        number_of_guest=book.number_of_guest,
+        checkin_date=checkin_date,
+        checkout_date=book.checkout_date.date()
+    )
 
 
 @app.put("/api/book/{guest_email}/{book_id}/checkout")

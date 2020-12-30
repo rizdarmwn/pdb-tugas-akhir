@@ -18,6 +18,7 @@ def build():
     # If keyspaces is specified, the table will be synched for all specified keyspaces.
     sync_table(models.Room)
     sync_table(models.Book)
+    sync_table(models.BookCancelPredictionHistory)
 
 
 build()
