@@ -111,7 +111,7 @@ async def create_book(book: BookBase, background_tasks: BackgroundTasks):
         guest_email=book.guest_email,
         room_id=book.room_id,
         number_of_guest=book.number_of_guest,
-        status="No-Show",
+        status="Book",
         checkin_date=book.checkin_date,
         checkout_date=book.checkout_date,
     )
@@ -144,10 +144,10 @@ def predict_book_cancellation(book: Book):
     )
 
 
-@app.put("/api/book/{guest_email}/{book_id}/checkout")
+@app.put("/api/book/{guest_email}/{book_id}/paid")
 def checkout_user_book(guest_email: str, book_id: str):
     updated_book = Book.get(guest_email=guest_email, id=book_id).update(
-        status="Check-Out"
+        status="Paid"
     )
     return {"status_code": 200, "data": updated_book}
 
