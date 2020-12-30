@@ -1,0 +1,39 @@
+{% extends "base.html" %} 
+{% block title %}Test Page{% endblock %} 
+{% block content %}
+  <div>
+    <form class="row g-3" method="POST"> 
+      <h2 class="text-center">Create New Room</h2>
+      <div class="col-12">
+        <label for="room_name" class="form-label">Room Name</label>
+        <input type="text" class="form-control" id="room_name">
+      </div>
+      <div class="col-12">
+        <label for="hotle_name" class="form-label">Hotel Name</label>
+        <input type="text" class="form-control" id="hotle_name">
+      </div>
+      <div class="col-12">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location">
+      </div>
+      <div class="col-12">
+        <label for="hotelType" class="form-label">Hotel Type</label>
+        <select class="form-select" aria-label="Adult" name="hotel_type">
+          <option value="resort">Resort</option>
+          <option value="city">City</option>
+        </select>
+      </div>
+      <div class="col-12">
+        <label for="guest_capacity" class="form-label">Guest Capacity</label>
+        <input type="number" class="form-control" id="guest_capacity">
+      </div>
+      <div class="col-12">
+        <label for="price" class="form-label">Price</label>
+        <input type="number" class="form-control" id="price">
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">CREATE</button>
+      </div>
+    </form>
+  </div>
+{% endblock %}
