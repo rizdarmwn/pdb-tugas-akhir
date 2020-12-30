@@ -162,5 +162,5 @@ def cancel_user_book(guest_email: str, book_id: str):
 
 @app.get("/api/cancel-prediction-history")
 def history_cancel_prediction():
-    prediction = BookCancelPredictionHistory.filter(cancel_prediction=True)
-    return {"status_code": 200, "data": list(prediction)}
+    predictions = BookCancelPredictionHistory.objects.all()
+    return {"status_code": 200, "data": list(predictions)}
