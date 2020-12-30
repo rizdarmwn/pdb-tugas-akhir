@@ -10,6 +10,24 @@ from sklearn import preprocessing
 from sklearn.tree import DecisionTreeClassifier
 
 
+class User(Model):
+    id = columns.UUID(primary_key=True, default=uuid.uuid4)
+    email = columns.Text(primary_key=True)
+    first_name = columns.Text()
+    last_name = columns.Text()
+    phone_number = columns.Text()
+    gender = columns.Boolean()
+    role = columns.Boolean()
+    password = columns.Text(partition_key=True)
+
+class User(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
+    phone_number: str
+    gender: bool
+    role: bool
+    password: str
 class Room(Model):
     id = columns.UUID(primary_key=True, default=uuid.uuid4)
     name = columns.Text()

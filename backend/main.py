@@ -3,11 +3,18 @@ import db
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
+from fastapi_login import LoginManager
 from typing import Optional
 
 from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
 
+SECRET = "dcb938070508fba2deb38a44aa2024801ca45e5849f6410f"
+
 app = FastAPI()
+
+#Login manager
+manager = LoginManager(SECRET, tokenUrl='/auth/token')
+
 predict_model = BookCancelPredictionModel()
 
 # kalo mau pake static uncomment line bawah
