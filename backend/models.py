@@ -29,18 +29,6 @@ class RoomBase(BaseModel):
     price: int
 
 
-class BookCancelPredictionHistory(Model):
-    cancel_prediction = columns.Boolean(partition_key=True)
-    booking_date = columns.Date(primary_key=True, default=date.today)
-    id = columns.UUID(primary_key=True)
-    probability = columns.Double()
-    guest_email = columns.Text()
-    room_id = columns.UUID()
-    number_of_guest = columns.Integer()
-    checkin_date = columns.Date()
-    checkout_date = columns.Date()
-
-
 class Book(Model):
     guest_email = columns.Text(partition_key=True)
     id = columns.UUID(primary_key=True, default=uuid.uuid4)
@@ -58,6 +46,18 @@ class BookBase(BaseModel):
     number_of_guest: int
     checkin_date: date
     checkout_date: date
+
+
+class BookCancelPredictionHistory(Model):
+    cancel_prediction = columns.Boolean(partition_key=True)
+    booking_date = columns.Date(primary_key=True, default=date.today)
+    id = columns.UUID(primary_key=True)
+    probability = columns.Double()
+    guest_email = columns.Text()
+    room_id = columns.UUID()
+    number_of_guest = columns.Integer()
+    checkin_date = columns.Date()
+    checkout_date = columns.Date()
 
 
 class BookCancelPredictionModel:
