@@ -1,9 +1,9 @@
 {% extends "base.html" %} 
-{% block title %}List of Room{% endblock %} 
+{% block title %}List of Booking{% endblock %} 
 {% block content %}
   <div>
     <h2 class="text-center">List of Bookings</h2>
-    {% for i in range(5) %}
+    {% for book in bookings %}
       <div class="card mt-3">
         <div class="row g-0">
           <div class="col-md-4">
@@ -11,29 +11,55 @@
           </div>
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">Hotel Satya</h5>
-              <p class="card-text">Booked by : milablabla</p>
-              <p class="card-text">Check in : 11/11/11</p>
-              <p class="card-text">Check out : 11/11/11</p>
+              <h5 class="card-title">{{ book.name }}</h5>
+              <p class="card-text">Booked by : {{ book.guest_email }}</p>
+              <p class="card-text">Status : {{ book.status }}</p>
+              <p class="card-text">Check in : {{ book.checkin_date }}</p>
+              <p class="card-text">Check out : {{ book.checkout_date }}</p>
               <p class="card-text fw-bold">Rp. 5,000,000</p>
-              <div class="row">
+              <form class="row update_book_status" data-id="{{ book.id }}" data-email="{{ book.guest_email }}">
                 <div class="col-md-4">
                   <select class="form-select" aria-label="Adult" name="hotel_type">
-                    <option value="booked">Booked</option>
-                    <option value="canceled">Canceled</option>
-                    <option value="checkout">Checkout</option>
-                    <option value="checkin">Checkin</option>
-                    <option value="noShow">No Show</option>
+                    <option {% if book.status == "Canceled"%}selected="selected"{% endif %} value="Canceled">Canceled</option>
+                    <option {% if book.status == "Paid"%}selected="selected"{% endif %} value="Check-Out">Paid</option>
                   </select>
                 </div>
                 <div class="col-md-2">
                   <button class="btn btn-primary">SAVE</button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
     {% endfor %}
   </div>
+{% endblock %}
+{% block extrascript %}
+<script>
+  const elements = document.getElementsByClassName("update_book_status");
+  for (var i = 0; i < elements.length; i++) {
+    elements[i].onsubmit = async function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const bookId = this.dataset.id;
+      const guestEmail = this.dataset.email;
+      const dropdown = event.target.elements.hotel_type.value;
+      const LINK = {
+        "Canceled": "cancel",
+        "Paid": "paid",
+      }
+      try{
+        const resp = await fetch(`/api/book/${guestEmail}/${bookId}/${LINK[dropdown]}`, {
+          method: 'PUT',
+        });
+        alert("Book status updated successfully");
+        window.location.reload();
+      }
+      catch(e){
+        alert("Ooops, there's something wrong");
+      }
+    };
+  }
+</script>
 {% endblock %}

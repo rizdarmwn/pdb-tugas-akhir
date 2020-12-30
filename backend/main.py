@@ -95,31 +95,38 @@ def register(user: UserBase):
 # contoh pake templates
 
 
-@app.get("/", response_class=HTMLResponse)
-def read_root(request: Request, user=Depends(get_current_username)):
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+def read_root(request: Request):
     return templates.TemplateResponse("home.html", {"request": request, "hello": "Hello World"})
 
 # FRONTEND STARTS
 
 
-@app.get("/rooms", response_class=HTMLResponse)
+@app.get("/rooms", response_class=HTMLResponse, include_in_schema=False)
 def read_room_list(request: Request):
-    return templates.TemplateResponse("list_room.html",  {"request": request})
+    return templates.TemplateResponse("list_room.html",  {"request": request, "rooms": list(Room.objects().all())})
 
 
-@app.get("/bookings", response_class=HTMLResponse)
+@app.get("/bookings", response_class=HTMLResponse, include_in_schema=False)
 def read_booking_list(request: Request):
-    return templates.TemplateResponse("list_booking.html",  {"request": request})
+    return templates.TemplateResponse("list_booking.html",  {"request": request, "bookings": list(Book.objects.all())})
 
 
-@app.get("/rooms/create", response_class=HTMLResponse)
+@app.get("/rooms/create", response_class=HTMLResponse, include_in_schema=False)
 def create_room_fe(request: Request):
     return templates.TemplateResponse("create_room.html",  {"request": request})
 
 
-@app.get("/rooms/book", response_class=HTMLResponse)
-def book_room(request: Request):
-    return templates.TemplateResponse("book_room.html",  {"request": request})
+
+@app.get("/rooms/{room_id}", response_class=HTMLResponse, include_in_schema=False)
+def update_room(request: Request, room_id: str):
+    room = Room.get(id=room_id)
+    return templates.TemplateResponse("update_room.html",  {"request": request, "room": room})
+
+@app.get("/rooms/{room_id}/book", response_class=HTMLResponse, include_in_schema=False)
+def book_room(request: Request, room_id: str):
+    room = Room.get(id=room_id)
+    return templates.TemplateResponse("book_room.html",  {"request": request, "room": room})
 
 # FRONTEND ENDS
 

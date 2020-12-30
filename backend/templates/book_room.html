@@ -1,5 +1,5 @@
 {% extends "base.html" %} 
-{% block title %}Test Page{% endblock %} 
+{% block title %}Book Room{% endblock %} 
 {% block content %}
   <div>
     <img
@@ -7,33 +7,41 @@
       alt="hotel"
       class="w-100"
     />
-    <h1 class="text-center">Check Availability</h1>
-    <p class="subtitle text-center">Rp5.000.000</p>
-    <form class="row g-3">
+    <h1 class="text-center">Book Room : {{room.name}}</h1>
+    <p class="subtitle text-center">Rp{{room.price}}</p>
+    <form class="row g-3" data-id="{{ room.id }}" id="book_room">
+      <div class="col-12">
+        <label for="email" class="form-label fw-bold">Email</label>
+        <input type="email" class="form-control" id="email" name="email">
+      </div>
       <div class="col">
-        <label for="checkIn" class="form-label fw-bold">Check In</label>
-        <input type="date" class="form-control" id="checkIn">
+        <label for="email" class="form-label fw-bold">Check In</label>
+        <input type="date" class="form-control" id="checkIn" name="checkin">
       </div>
       <div class="col">
         <label for="checkOut" class="form-label fw-bold">Check out</label>
-        <input type="date" class="form-control" id="checkOut">
+        <input type="date" class="form-control" id="checkOut" name="checkout">
       </div>
       <div class="col">
         <label for="adult" class="form-label fw-bold">Adult</label>
-        <select class="form-select" aria-label="Adult">
+        <select class="form-select" aria-label="Adult" name="adult">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
         </select>
       </div>
       <div class="col">
         <label for="children" class="form-label fw-bold">Children</label>
-        <select class="form-select" aria-label="children">
+        <select class="form-select" aria-label="children" name="children">
           <option value="1">1</option>
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
         </select>
       </div>
       <div class="col">
@@ -44,4 +52,37 @@
       </div>
     </form>
   </div>
+{% endblock %}
+{% block extrascript %}
+<script>
+  const form = document.getElementById("book_room");
+  form.onsubmit = async function(event){
+    event.preventDefault();
+    event.stopPropagation();
+    console.log(event.target.elements["checkin"].value)
+    const body = {
+      "guest_email": event.target.elements["email"].value,
+      "room_id": this.dataset.id,
+      "number_of_guest": parseInt(event.target.elements["adult"].value) + parseInt(event.target.elements["children"].value),
+      "checkin_date": event.target.elements["checkin"].value,
+      "checkout_date": event.target.elements["checkout"].value,
+    }
+    try{
+      const resp = await fetch("/api/book", {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+      console.log(body)
+      alert("Book created successfully");
+    }
+    catch(e){
+      alert("Ooops, there's something wrong");
+    }
+    return false;
+  };
+</script>
 {% endblock %}
