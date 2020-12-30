@@ -2,7 +2,7 @@ import db
 
 from fastapi import BackgroundTasks, FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
 from fastapi.security import OAuth2PasswordRequestForm
@@ -46,6 +46,8 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     access_token = manager.create_access_token(
         data=dict(sub=email)
     )
+    resp = RedirectResponse(url="/")
+    manager.set_cookie(resp, access_token)
     return {'access_token' : access_token, 'token_type' : 'bearer'}
 ##END##
 
