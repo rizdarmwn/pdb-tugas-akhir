@@ -48,7 +48,8 @@ def login(data: OAuth2PasswordRequestForm = Depends()):
     )
     resp = RedirectResponse(url="/")
     manager.set_cookie(resp, access_token)
-    return {'access_token' : access_token, 'token_type' : 'bearer'}
+    return resp
+    # return {'access_token' : access_token, 'token_type' : 'bearer'}
 ##END##
 
 # contoh pake templates
