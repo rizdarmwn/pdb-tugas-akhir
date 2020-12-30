@@ -19,6 +19,7 @@ def build():
     sync_table(models.Room)
     sync_table(models.Book)
     sync_table(models.BookCancelPredictionHistory)
+    sync_table(models.User)
 
 
 build()
