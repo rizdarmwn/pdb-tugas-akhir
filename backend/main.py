@@ -93,9 +93,35 @@ def register(user: UserBase):
 ##END##
 
 # contoh pake templates
+
+
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request, user=Depends(get_current_username)):
     return templates.TemplateResponse("home.html", {"request": request, "hello": "Hello World"})
+
+# FRONTEND STARTS
+
+
+@app.get("/rooms", response_class=HTMLResponse)
+def read_room_list(request: Request):
+    return templates.TemplateResponse("list_room.html",  {"request": request})
+
+
+@app.get("/bookings", response_class=HTMLResponse)
+def read_booking_list(request: Request):
+    return templates.TemplateResponse("list_booking.html",  {"request": request})
+
+
+@app.get("/rooms/create", response_class=HTMLResponse)
+def create_room_fe(request: Request):
+    return templates.TemplateResponse("create_room.html",  {"request": request})
+
+
+@app.get("/rooms/book", response_class=HTMLResponse)
+def book_room(request: Request):
+    return templates.TemplateResponse("book_room.html",  {"request": request})
+
+# FRONTEND ENDS
 
 
 # CRUD Room
@@ -140,6 +166,7 @@ def update_room(room_id: str, room: RoomBase):
     )
     return {"status_code": 200, "data": updated_room}
 
+
 # CRUD Book
 @app.get("/api/book")
 def get_all_book():
@@ -159,7 +186,7 @@ async def create_book(book: BookBase, background_tasks: BackgroundTasks):
         guest_email=book.guest_email,
         room_id=book.room_id,
         number_of_guest=book.number_of_guest,
-        status="No-Show",
+        status="Book",
         checkin_date=book.checkin_date,
         checkout_date=book.checkout_date,
     )
@@ -192,10 +219,10 @@ def predict_book_cancellation(book: Book):
     )
 
 
-@app.put("/api/book/{guest_email}/{book_id}/checkout")
+@app.put("/api/book/{guest_email}/{book_id}/paid")
 def checkout_user_book(guest_email: str, book_id: str):
     updated_book = Book.get(guest_email=guest_email, id=book_id).update(
-        status="Check-Out"
+        status="Paid"
     )
     return {"status_code": 200, "data": updated_book}
 
@@ -206,3 +233,9 @@ def cancel_user_book(guest_email: str, book_id: str):
         status="Canceled"
     )
     return {"status_code": 200, "data": updated_book}
+
+
+@app.get("/api/cancel-prediction-history")
+def history_cancel_prediction():
+    predictions = BookCancelPredictionHistory.objects.all()
+    return {"status_code": 200, "data": list(predictions)}
