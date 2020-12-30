@@ -1,15 +1,19 @@
 import db
-
-from fastapi import BackgroundTasks, FastAPI, Request
+import secrets
+from fastapi import BackgroundTasks, FastAPI, Request, Depends, HTTPException, status
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi_login import LoginManager
+from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from typing import Optional
 
-from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory, User, UserBase
+
+SECRET = "dcb938070508fba2deb38a44aa2024801ca45e5849f6410f"
 
 app = FastAPI()
+
 predict_model = BookCancelPredictionModel()
 
 # kalo mau pake static uncomment line bawah
@@ -17,11 +21,82 @@ predict_model = BookCancelPredictionModel()
 
 templates = Jinja2Templates(directory="templates")
 
+#Auth
+
+#Login manager
+# manager = LoginManager(SECRET, tokenUrl='/auth/token', use_cookie=True)
+
+def load_user(email:str, password:str):
+    user = User.get(email=email, password=password)
+    return user
+
+# # auth token buat login
+# @app.route('/auth/token')
+# def login(data: OAuth2PasswordRequestForm = Depends()):
+#     email = data.username
+#     password = data.password
+
+#     user = load_user(email, password)
+#     if not user:
+#         raise InvalidCredentialsException
+#     elif password != user['password']:
+#         raise InvalidCredentialsException
+
+#     access_token = manager.create_access_token(
+#         data=dict(sub=email)
+#     )
+#     resp = RedirectResponse(url="/")
+#     manager.set_cookie(resp, access_token)
+#     return resp
+    # return {'access_token' : access_token, 'token_type' : 'bearer'}
+
+security = HTTPBasic()
+
+
+def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
+    user = load_user(credentials.username, credentials.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    elif credentials.password != user['password']:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+# contoh buat login gimana caranya
+@app.get("/auth")
+def read_current_user(username: str = Depends(get_current_username)):
+    return {"username": username}
+
+@app.get('/register')
+def register_page(request: Request):
+    return templates.TemplateResponse("register.html", {"request" : request})
+
+@app.post('/register')
+def register(user: UserBase):
+    new_user = User.create(
+        password=user.password,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        phone_number=user.phone_number,
+        gender =  user.gender,
+        role = user.role
+    )
+    return {"status_code" : 200, "data" : new_user}
+##END##
+
 # contoh pake templates
 
 
 @app.get("/", response_class=HTMLResponse)
-def read_root(request: Request):
+def read_root(request: Request, user=Depends(get_current_username)):
     return templates.TemplateResponse("home.html", {"request": request, "hello": "Hello World"})
 
 # FRONTEND STARTS
