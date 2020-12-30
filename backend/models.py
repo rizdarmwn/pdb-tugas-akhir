@@ -40,6 +40,14 @@ class Book(Model):
     checkout_date = columns.Date()
 
 
+class BookBase(BaseModel):
+    guest_email: str
+    room_id: uuid.UUID
+    number_of_guest: int
+    checkin_date: date
+    checkout_date: date
+
+
 class BookCancelPredictionHistory(Model):
     cancel_prediction = columns.Boolean(partition_key=True)
     booking_date = columns.Date(primary_key=True, default=date.today)
@@ -50,14 +58,6 @@ class BookCancelPredictionHistory(Model):
     number_of_guest = columns.Integer()
     checkin_date = columns.Date()
     checkout_date = columns.Date()
-
-
-class BookBase(BaseModel):
-    guest_email: str
-    room_id: uuid.UUID
-    number_of_guest: int
-    checkin_date: date
-    checkout_date: date
 
 
 class BookCancelPredictionModel:

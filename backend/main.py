@@ -6,6 +6,8 @@ from fastapi.responses import HTMLResponse
 from typing import Optional
 
 from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 predict_model = BookCancelPredictionModel()
@@ -16,9 +18,35 @@ predict_model = BookCancelPredictionModel()
 templates = Jinja2Templates(directory="templates")
 
 # contoh pake templates
+
+
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
     return templates.TemplateResponse("home.html", {"request": request, "hello": "Hello World"})
+
+# FRONTEND STARTS
+
+
+@app.get("/rooms", response_class=HTMLResponse)
+def read_room_list(request: Request):
+    return templates.TemplateResponse("list_room.html",  {"request": request})
+
+
+@app.get("/bookings", response_class=HTMLResponse)
+def read_booking_list(request: Request):
+    return templates.TemplateResponse("list_booking.html",  {"request": request})
+
+
+@app.get("/rooms/create", response_class=HTMLResponse)
+def create_room_fe(request: Request):
+    return templates.TemplateResponse("create_room.html",  {"request": request})
+
+
+@app.get("/rooms/book", response_class=HTMLResponse)
+def book_room(request: Request):
+    return templates.TemplateResponse("book_room.html",  {"request": request})
+
+# FRONTEND ENDS
 
 
 # CRUD Room
@@ -62,6 +90,7 @@ def update_room(room_id: str, room: RoomBase):
         price=room.price
     )
     return {"status_code": 200, "data": updated_room}
+
 
 # CRUD Book
 @app.get("/api/book")

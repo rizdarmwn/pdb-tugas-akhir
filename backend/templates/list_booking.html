@@ -1,0 +1,39 @@
+{% extends "base.html" %} 
+{% block title %}List of Room{% endblock %} 
+{% block content %}
+  <div>
+    <h2 class="text-center">List of Bookings</h2>
+    {% for i in range(5) %}
+      <div class="card mt-3">
+        <div class="row g-0">
+          <div class="col-md-4">
+            <img class="w-100 h-100" style="object-fit:cover;" src="https://cache.marriott.com/marriottassets/marriott/JOGMC/jogmc-exterior-0236-hor-feat.jpg" alt="...">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Hotel Satya</h5>
+              <p class="card-text">Booked by : milablabla</p>
+              <p class="card-text">Check in : 11/11/11</p>
+              <p class="card-text">Check out : 11/11/11</p>
+              <p class="card-text fw-bold">Rp. 5,000,000</p>
+              <div class="row">
+                <div class="col-md-4">
+                  <select class="form-select" aria-label="Adult" name="hotel_type">
+                    <option value="booked">Booked</option>
+                    <option value="canceled">Canceled</option>
+                    <option value="checkout">Checkout</option>
+                    <option value="checkin">Checkin</option>
+                    <option value="noShow">No Show</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-primary">SAVE</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
