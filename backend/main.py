@@ -1,19 +1,18 @@
 import db
 
-from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 from fastapi_login import LoginManager
+from fastapi_login.exceptions import InvalidCredentialsException
+from fastapi.security import OAuth2PasswordRequestForm
 from typing import Optional
 
-from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory
+from models import Room, RoomBase, Book, BookBase, BookCancelPredictionModel, BookCancelPredictionHistory, User
 
 SECRET = "dcb938070508fba2deb38a44aa2024801ca45e5849f6410f"
 
 app = FastAPI()
-
-#Login manager
-manager = LoginManager(SECRET, tokenUrl='/auth/token')
 
 predict_model = BookCancelPredictionModel()
 
@@ -21,6 +20,34 @@ predict_model = BookCancelPredictionModel()
 # app.mount("/static", StaticFiles(directory="static"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+
+#LOGIN
+
+#Login manager
+manager = LoginManager(SECRET, tokenUrl='/auth/token', use_cookie=True)
+
+@manager.user_loader
+def load_user(email:str):
+    user = User.get(email=email)
+    return user
+
+# auth token buat login
+@app.post('/auth/token')
+def login(data: OAuth2PasswordRequestForm = Depends()):
+    email = data.username
+    password = data.password
+
+    user = load_user(email)
+    if not user:
+        raise InvalidCredentialsException
+    elif password != user['password']:
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=email)
+    )
+    return {'access_token' : access_token, 'token_type' : 'bearer'}
+##END##
 
 # contoh pake templates
 @app.get("/", response_class=HTMLResponse)

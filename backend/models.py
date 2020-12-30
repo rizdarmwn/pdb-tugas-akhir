@@ -28,6 +28,7 @@ class User(BaseModel):
     gender: bool
     role: bool
     password: str
+
 class Room(Model):
     id = columns.UUID(primary_key=True, default=uuid.uuid4)
     name = columns.Text()
